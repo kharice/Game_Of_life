@@ -1,1 +1,0 @@
-//Gère l'état des cellules

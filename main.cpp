@@ -1,64 +1,60 @@
-//Génération du fichier 
-//On sauvegarde chaque étape (itération dans le fichier de sauvegarde)
 #include <iostream>
-#include <fstream> //Bibliothèque standard pour gérer les fichiers (création et écriture)
 #include <string>
-#include <filesystem>
-#include <stdexcept>
+#include <limits> 
+#include <stdexcept> //Pour la gestion des erreurs 
 
-//I - Génération fichier texte 
-std::ofstream fichier_sortie ("fichier.txt"); //Si le fichier existe déjà il sera alors écrasé 
-//Vérifions si le fichier s'est bien ouvert : 
-if (fichier_sortie.is_opent()){
-    //fichier prêt à être écrit 
-    std::cout<<"Le fichier est prêt à être écrit"<<std::endl;
-}else{
-    //Echec de l'ouverture 
-    std::cout<<"Echec de l'ouverture du fichier"<<
+#include "Jeu.hpp"
+
+//Fonction pour vider le buffer 
+void viderBuffer(){
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
-//On va alors écrire dans le fichier 
-fichier_sortie <<"Ceci est la première ligne du fichier"<< std::endl;
-fichier_sortie <<"Ceci est la deuxième ligne."<<std::endl;
-
-
-// II - Génération dossier de sortie 
-
-//Nous allons utiliser un namespace pour rendre plus facile les appels de la bibliothèque pour le système de fichiers :
-namespace fs = std::filesystem;
-//Définissons le nom du fichier d'entrée 
-std::string nom_fichier_entree = "Nom du fichier.ext"; 
-//Chemin d'entrée du fichier 
-fs::path chemin_fichier = nom_fichier_entree;
-//Nom de base du fichier sans l'extension 
-std::string nom_base = nom_fichier_entree.substr(0, nom_fichier_entree.find_last_of("."));
-//std::string nom_base chemin_fichier.stem().string();
-//Nom du dossier de sortie 
-fs::path nom_dossier_sortie = nom_base + "out";
-std::cout <<"Nom du dossier cible :"<<nom_dossier_sortie<<std::endl;
-
-//Création du fichier de sortie 
-if (fs::create_directory(nom_dossier_sortie)){
-    std::cout<<"Dossier cree :" <<nom_dossier_sortie<<std::endl;
-}else{
-    //Si le dossier est déjà créé 
-    if (fs::exists(nom_dossier_sortie)){
-        std::cout<<"Le dossier existe deja :"<<nom_dossier_sortie<<std::endl;
-    }else {
-        //En cas d'erreur :
-        std::cerr<<"Impossible de créer le dossier"<<std::endl;
+int main (int argc, char* argv[]){
+    //Vérification du fichier d'entrée 
+    if (argc !=2){
+        std::cerr<<"Utilisation: " <<argv[0]<<"<nom_du_fichier_dentree.txt>" << std::endl;
         return 1;
     }
-}
+    std::string nomFichierEntree =argv[1];
 
-//Stockons maintenant les résultats 
-//Définition du chemin complet du fichier resultat
-fs::path chemin_fichier_resultat = nom_dossier_sortie/"iteration_01.txt";
-//Ouverture du flux de sortie dans le chemin 
-std::ofstream fichier_resultat(chemin_fichier_resultat);
+    int iterations = 0; 
 
-if(fichier_resultat.is_open()){
-    fichier_resultat<<"Resultat de la premiere iteration."<<std::endl;
-    fichier_resultat.close();
-    std::cout<<"Fichier ecrit dans :"<<chemin_fichier_resultat<<std::endl;
+    //Etape pour la saisie du Mode d'utilisation 
+    std::string mode;
+    std::cout <<"Choisissez le mode d'exécution :"<<std::endl;
+    std::cout<<"Entrez 'console' ou 'graphique'";
+    std::cin>> mode;
+
+    if (mode=="console"){
+        //L'utilisateur va donc maintenant saisir le nombre d'itérations
+        std::cout<< "Entrez le nombre d'itérations à effectuer :";
+        if (!(std::cin>>iterations)|| iterations <0){
+            std::cerr<<"Saisissez une valeur valide"<<std::endl;
+            viderBuffer();
+        }
+    }else if (mode !="graphique"){
+        std::cerr << "Mode non reconnu! Le programme va s'arrêter "<<std::endl;
+        return 1;
+    }
+    //Lancement de la simulation 
+    try{
+        Jeu jeu (nomFichierEntree);
+        std::cout<<"\n---- Début de la simulation ---" <<std::endl;
+        if (mode =="console"){
+            //Lancement de la création des fichiers dans le dossier
+            std::cout<<"Execution en mode CONSOLE. Exportation de " <<iterations<<"étapes..."<<std::endl;
+            jeu.executerModeConsole(iterations);
+            std::cout<<"Exportation terminée avec succès."<<std::endl;
+        } else if (mode=="graphique"){
+        //Lancement de la fenêtre sfml
+        std::cout <<"Execution en mode GRAPHIQUE. " <<std::endl;
+        jeu.executerModeGraphique();
+        }
+    } catch (const std::runtime_error& e){
+        //Si il y a une erreur critique 
+        std::cerr<<"\n ERREUR CRITIQUE !"<<e.what()<<std::endl;
+        return 1;
+    }
+    return 0;
 }
