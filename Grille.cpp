@@ -18,7 +18,7 @@ void Grille::nettoyerGrille(){
     }
     //On va utiliser la taille réelle du tableau 
     for (size_t y=0; y< tableauCellules_.size(); ++y){ //Accès la ligne : index par la hauteur
-        for (int x=0; x< tableauCellules_[y].size();++x){
+        for (size_t x=0; x< tableauCellules_[y].size();++x){
             //On va vérifier que le pointeur existe avant de tout supprimer
             if (tableauCellules_[y][x] !=nullptr){ //nullptr : pointeur nul
                  delete tableauCellules_[y][x]; 
@@ -43,15 +43,15 @@ void Grille::chargerMotif(const std::string& nomFichier){
         throw std::runtime_error("Fichier video ou illisible !");
     }
     std::stringstream ss(premiereLigne);
-    int nvHauteur, nvLargeur; //On récupère les nouvelles dimensions depuis la première ligne 
+    int nvLargeur, nvHauteur; //On récupère les nouvelles dimensions depuis la première ligne 
     
     //Pour vérifier la bonne lecture des dimensions (Deux entiers séparés d'un espace) :
     if (!(ss>>nvHauteur>>nvLargeur)){
         throw std::runtime_error("Impossible de lire les dimensions, vérifiez le format !");
     }
     //On va alors mettre à jour les dimensions de la grille
-    hauteur_=nvHauteur;
     largeur_=nvLargeur;
+    hauteur_=nvHauteur;
     
     //Préparation de la grille pour nos nouvelles dimensions 
     initGrilleVide();

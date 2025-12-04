@@ -4,6 +4,7 @@
 
 #include <string>
 #include <stdexcept>
+#include <limits>
 
 #include "Grille.hpp"
 #include "ModeConsole.hpp"
@@ -21,6 +22,9 @@ public :
     //On interdie la copie vu qu'on utilise des pointeurs ici 
     Jeu(const Jeu&) = delete;
     Jeu& operator = (const Jeu&) = delete;
+
+    //Méthode principale pour lancer le jeu :
+    void lancerJeu(int maxIterations);
 
     void executerModeConsole(int maxIterations); //Fonction pour exécuter le jeu en mode console 
     //maxIterations : nombre max d'itérations que l'on aura défini 

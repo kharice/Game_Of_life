@@ -2,14 +2,30 @@
 #include "cellule.hpp"
 #include "Grille.hpp"
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 ModeGraphique::ModeGraphique(const Grille& grille, float v_cible) 
-: window_(sf::VideoMode(grille.getLargeur()*cellSize_, grille.getHauteur()*cellSize_), "Jeu de la Vie "), grille_(grille)
+: grille_(grille)
 {
-    //On va calculer la durée cible entre chaque itération (1/v_cible)
+    // Utiliser la taille réelle de la grille chargée
+    unsigned int grid_height = grille.getHauteur();
+    unsigned int grid_width = grille.getLargeur();
+    const unsigned int CELL_SIZE = 10; // Chaque cellule fait 10x10 pixels
+    
+    unsigned int window_width = grid_width * CELL_SIZE;
+    unsigned int window_height = grid_height * CELL_SIZE;
+    
+    // Créer la fenêtre
+    window_.create(sf::VideoMode(window_width, window_height), "Jeu de la Vie");
+    window_.setPosition(sf::Vector2i(100, 100));
+    
+    // Calculer la durée cible entre chaque itération (1/v_cible)
     timePerFrame_ = sf::seconds(1.0f/v_cible);
-    //Initialisons le modèle de cellule 
-    cellShape_.setSize(sf::Vector2f(cellSize_, cellSize_));
+    
+    // Initialiser le modèle de cellule avec la bonne taille
+    cellShape_.setSize(sf::Vector2f(CELL_SIZE, CELL_SIZE));
+    cellShape_.setFillColor(sf::Color::White);
 }
 
 void ModeGraphique::processEvents(){
@@ -27,25 +43,22 @@ void ModeGraphique::update(float delta_t, Grille& grille){
 }
 
 void ModeGraphique::dessiner(){
-    window_.clear(sf::Color::Black); //La fenêtre aura un fond noir 
-
-    int hauteur = grille_.getHauteur();
-    int largeur = grille_.getLargeur();
+    const unsigned int CELL_SIZE = 10;
     
-    for (int y =0; y<hauteur, ++y;){
-        for (int x=0; x<largeur, ++x;){
-            //Accédons à la cellule pour recupérer son état
-            const cellule* cell = grille_.getCellule(x,y);
-            if (cell && cell-> estVivante()){
-                cellShape_.setFillColor(sf::Color::White); //On mets les cellule vivante en blanc 
-                //Calcul des coordonnées d'affichage 
-                cellShape_.setPosition(x*cellSize_, y*cellSize_);
-                //Dessiner la cellule 
+    window_.clear(sf::Color::Black); // Fond noir
+    
+    // Afficher les cellules vivantes en blanc
+    for (int y = 0; y < grille_.getHauteur(); ++y) {
+        for (int x = 0; x < grille_.getLargeur(); ++x) {
+            const cellule* cell = grille_.getCellule(x, y);
+            if (cell && cell->estVivante()) {
+                cellShape_.setPosition(x * CELL_SIZE, y * CELL_SIZE);
                 window_.draw(cellShape_);
             }
         }
     }
-    window_.display(); //On affiche ce que l'on a créé
+    
+    window_.display(); // Rafraîchir l'affichage
 }
 
 void ModeGraphique::run(Grille& grille){

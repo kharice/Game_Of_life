@@ -3,19 +3,18 @@
 #include <filesystem>
 #include "ModeConsole.hpp"
 #include "cellule.hpp"
-ModeConsole::ModeConsole(const std::string& nomFichierEntree){
+ModeConsole::ModeConsole(const std::string& nomFichierEntree, const std::string& nomDossier){
     //Tout d'abordd extrayons la base du nom du chier (sans l'extension)
     size_t lastDot = nomFichierEntree.find_last_of('.'); 
     nomBaseFichier_ = nomFichierEntree.substr(0, lastDot);
-    //Définissons le nom du dossier du dossier 
-    nomDossierSortie_ = nomBaseFichier_ + "_out";
-    //On créé alors enfin le dossier de sortie
-    creerDossierSortie();
+    //Stockons le nom du dossier passé en paramètre
+    nomDossierSortie_ = nomDossier;
 }
 void ModeConsole::expEtatGrille(const Grille& grille, int iteration) const{
-    //Construisons les noms de fichiers 
+    // Utilisation du chemin du dossier stocké dans le membre nomDossierSortie_
+    //Construisons le chemin du fichier 
     std::stringstream ss;
-    ss <<nomDossierSortie_ <<"/" <<nomBaseFichier_ << "_iteration";
+    ss << nomDossierSortie_ <<"/" << nomBaseFichier_ << "_iteration";
     //Formatons l'indice des itérations sur 2 chiffres avec des 0 de tête 
     ss <<std::setw(2) <<std::setfill('0') <<iteration;
     ss << ".txt";
@@ -54,12 +53,13 @@ void ModeConsole::expEtatGrille(const Grille& grille, int iteration) const{
     fichierSortie.close();
 } 
 
-void ModeConsole::creerDossierSortie() const {
-    namespace fs = std::filesystem;
-    fs::path dir(nomDossierSortie_);
-    if (!fs::exists(dir)) {
-        if (!fs::create_directory(dir)) {
-            throw std::runtime_error("Impossible de créer le dossier : " + nomDossierSortie_);
-        }
-    }
-}
+//void ModeConsole::creerDossierSortie() const {
+    //namespace fs = std::filesystem;
+    //fs::path dir(nomDossierSortie_);
+    //if (!fs::exists(dir)) {
+        //if (!fs::create_directory(dir)) {
+            //throw std::runtime_error("Impossible de créer le dossier : " + nomDossierSortie_);
+        //}
+    //}
+//}
+    

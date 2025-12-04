@@ -20,37 +20,23 @@ int main (int argc, char* argv[]){
 
     int iterations = 0; 
 
-    //Etape pour la saisie du Mode d'utilisation 
-    std::string mode;
-    std::cout <<"Choisissez le mode d'exécution :"<<std::endl;
-    std::cout<<"Entrez 'console' ou 'graphique'";
-    std::cin>> mode;
-
-    if (mode=="console"){
-        //L'utilisateur va donc maintenant saisir le nombre d'itérations
-        std::cout<< "Entrez le nombre d'itérations à effectuer :";
-        if (!(std::cin>>iterations)|| iterations <0){
-            std::cerr<<"Saisissez une valeur valide"<<std::endl;
-            viderBuffer();
-        }
-    }else if (mode !="graphique"){
-        std::cerr << "Mode non reconnu! Le programme va s'arrêter "<<std::endl;
-        return 1;
+    
+    //L'utilisateur va donc maintenant saisir le nombre d'itérations
+    std::cout<< "Entrez le nombre d'itérations à effectuer (attention au i-1):";
+    if (!(std::cin>>iterations)|| iterations <0){
+        std::cerr<<"Saisissez une valeur valide"<<std::endl;
+        viderBuffer();
     }
+    viderBuffer();
+    
     //Lancement de la simulation 
     try{
         Jeu jeu (nomFichierEntree);
         std::cout<<"\n---- Début de la simulation ---" <<std::endl;
-        if (mode =="console"){
-            //Lancement de la création des fichiers dans le dossier
-            std::cout<<"Execution en mode CONSOLE. Exportation de " <<iterations<<"étapes..."<<std::endl;
-            jeu.executerModeConsole(iterations);
-            std::cout<<"Exportation terminée avec succès."<<std::endl;
-        } else if (mode=="graphique"){
-        //Lancement de la fenêtre sfml
-        std::cout <<"Execution en mode GRAPHIQUE. " <<std::endl;
-        jeu.executerModeGraphique();
-        }
+
+        jeu.lancerJeu(iterations); // On lance le jeu 
+
+        std::cout<<"\n---- Fin de la simulation ---" <<std::endl;
     } catch (const std::runtime_error& e){
         //Si il y a une erreur critique 
         std::cerr<<"\n ERREUR CRITIQUE !"<<e.what()<<std::endl;
