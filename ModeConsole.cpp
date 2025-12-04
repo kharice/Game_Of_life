@@ -1,5 +1,6 @@
 
 #include <iomanip>
+#include <filesystem>
 #include "ModeConsole.hpp"
 #include "cellule.hpp"
 ModeConsole::ModeConsole(const std::string& nomFichierEntree){
@@ -27,7 +28,7 @@ void ModeConsole::expEtatGrille(const Grille& grille, int iteration) const{
     }
     //Nous allons maintenant remplir le fichier : 
     //Pour écrire les dimensions 
-    fichierSortie <<grille.getLargeur() <<" "<< grille.getHauteur() << "\n";
+    fichierSortie <<grille.getHauteur() <<" "<< grille.getLargeur() << "\n";
     //Pour écrire l'état des cellules
     int hauteur = grille.getHauteur(); //On récupère la hauteur à l'aide de la classe Grille
     int largeur = grille.getLargeur(); //On récupère la largeur à l'aide de la classe Grille aussi 
@@ -42,9 +43,23 @@ void ModeConsole::expEtatGrille(const Grille& grille, int iteration) const{
             }else{
                 fichierSortie <<'0';
             }
+            //Pour ajouter l'espace entre les chiffres (après chaque cellule sauf que c'est la dernière colonne)
+            if (x<largeur-1){
+                fichierSortie<<' ';
+            }
         }
         fichierSortie <<"\n"; //Juste pour sauter une ligne après chaque rangée pour que ce soit plus lisible 
     }
     //On ferme enfin le fichier 
     fichierSortie.close();
 } 
+
+void ModeConsole::creerDossierSortie() const {
+    namespace fs = std::filesystem;
+    fs::path dir(nomDossierSortie_);
+    if (!fs::exists(dir)) {
+        if (!fs::create_directory(dir)) {
+            throw std::runtime_error("Impossible de créer le dossier : " + nomDossierSortie_);
+        }
+    }
+}

@@ -1,4 +1,6 @@
 #include "Rules.hpp"
+#include "EtatCellule.hpp"
+#include "cellule.hpp"
 
 cellule* Rules::calculerProchainEtat(const cellule*celluleActuelle, int nbVoisinsVivants){
     //Récupérons déjà les données pour construire une nouvelle cellule 

@@ -18,7 +18,7 @@ private :
     //On va faire un tableau avec des cases et chaque case va contenir une cellule
     //Ce sera une matrice de pointeurs vers les cellules 
     std::vector<std::vector<cellule*>> tableauCellules_;
-    
+    void initGrilleVide(); 
     int comptVoisinsVivants(int x, int y) const; //Compte le nombre de voisins vivants d'une cellule
     //x : coordonnée X de la cellule centrale
     //y : coordonnée Y de la cellule centrale
@@ -33,7 +33,7 @@ public :
 
     void chargerMotif(const std::string& nomFichier); //On va charger l'état initial de la grille à partir du fichier texte 
 
-    void initGrilleVide(); 
+    
     void genSuivante(); //Fonction générant la prochaine génération 
 
     //Getters pour les dimensions de la grilles
